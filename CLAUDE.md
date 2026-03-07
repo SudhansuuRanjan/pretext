@@ -46,3 +46,8 @@ Internal notes for contributors and agents. Use `README.md` as the public source
 ### Related
 
 - `../text-layout/` — Sebastian Markbage's original prototype + our experimental variants.
+
+### TODO
+- TweetDeck-style 3 columns of the same text scrolling at the same time
+- Resize Old Man and the Sea
+- Creative responsive magazine-like layout contouring some shapes

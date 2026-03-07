@@ -22,6 +22,15 @@ const { height, lineCount } = layout(block, containerWidth, 19)
 
 `prepare()` segments text via `Intl.Segmenter`, measures each word via canvas, and caches the widths. On browsers that need emoji correction, it also does one cached DOM calibration read per font. `layout()` walks the cached widths to count lines and multiplies by the caller-provided `lineHeight` — no canvas, no DOM, no string operations. Each `layout()` call is ~0.0002ms.
 
+## Practical uses
+
+- Virtualized feeds and comment lists: predict row heights before mount so scrolling stays stable without DOM measurement passes.
+- Masonry or card grids: size text-heavy cards up front before placing them into columns.
+- Chat or messaging UIs: recompute bubble heights on every width change without touching the DOM layout engine.
+- Loading skeletons and cumulative layout shift reduction: reserve the right amount of vertical space before the final text renders.
+- Responsive card/layout decisions: switch between compact and expanded variants based on predicted text height.
+- Canvas or custom renderers: use `layoutWithLines()` to get browser-like wrapping without relying on DOM text nodes.
+
 ## Performance
 
 500 comments, resize to a new width (the hot path):
