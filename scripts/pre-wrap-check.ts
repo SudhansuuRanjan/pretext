@@ -29,7 +29,6 @@ type OracleCase = {
   width: number
   font: string
   lineHeight: number
-  tabSize?: number
   dir?: 'ltr' | 'rtl'
   lang?: string
 }
@@ -103,6 +102,13 @@ const ORACLE_CASES: OracleCase[] = [
     lineHeight: 32,
   },
   {
+    label: 'whitespace-only middle line',
+    text: 'foo\n  \nbar',
+    width: 220,
+    font: '18px serif',
+    lineHeight: 32,
+  },
+  {
     label: 'crlf normalization',
     text: 'foo\r\n  bar',
     width: 220,
@@ -142,17 +148,16 @@ const ORACLE_CASES: OracleCase[] = [
     lineHeight: 32,
   },
   {
-    label: 'custom tab size',
-    text: 'a\tb',
-    width: 116,
-    font: '18px serif',
-    lineHeight: 32,
-    tabSize: 4,
-  },
-  {
     label: 'double tabs',
     text: 'a\t\tb',
     width: 130,
+    font: '18px serif',
+    lineHeight: 32,
+  },
+  {
+    label: 'tab after hard break',
+    text: 'foo\n\tbar',
+    width: 220,
     font: '18px serif',
     lineHeight: 32,
   },
@@ -172,10 +177,9 @@ function buildProbeUrl(
   return (
     `${baseUrl}/probe?text=${encodeURIComponent(testCase.text)}` +
     `&width=${testCase.width}` +
-      `&font=${encodeURIComponent(testCase.font)}` +
-      `&lineHeight=${testCase.lineHeight}` +
-      (testCase.tabSize === undefined ? '' : `&tabSize=${testCase.tabSize}`) +
-      `&dir=${encodeURIComponent(dir)}` +
+    `&font=${encodeURIComponent(testCase.font)}` +
+    `&lineHeight=${testCase.lineHeight}` +
+    `&dir=${encodeURIComponent(dir)}` +
     `&lang=${encodeURIComponent(lang)}` +
     `&whiteSpace=pre-wrap` +
     `&method=span` +

@@ -121,7 +121,6 @@ const text = requireFlag('text')
 const width = parseNumberFlag('width', 600)
 const font = parseStringFlag('font') ?? '18px serif'
 const lineHeight = parseNumberFlag('lineHeight', 32)
-const tabSize = parseStringFlag('tabSize')
 const dir = parseStringFlag('dir') ?? 'ltr'
 const lang = parseStringFlag('lang') ?? (dir === 'rtl' ? 'ar' : 'en')
 const method = parseStringFlag('method')
@@ -141,7 +140,6 @@ try {
     `&width=${width}` +
     `&font=${encodeURIComponent(font)}` +
     `&lineHeight=${lineHeight}` +
-    (tabSize === null ? '' : `&tabSize=${encodeURIComponent(tabSize)}`) +
     `&dir=${encodeURIComponent(dir)}` +
     `&lang=${encodeURIComponent(lang)}` +
     `&whiteSpace=${encodeURIComponent(whiteSpace)}` +

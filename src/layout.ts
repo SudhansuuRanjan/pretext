@@ -145,7 +145,6 @@ export type PrepareProfile = {
 
 export type PrepareOptions = {
   whiteSpace?: WhiteSpaceMode
-  tabSize?: number
 }
 
 export type PreparedLineChunk = {
@@ -190,7 +189,6 @@ function measureAnalysis(
   analysis: TextAnalysis,
   font: string,
   includeSegments: boolean,
-  options?: PrepareOptions,
 ): InternalPreparedText | PreparedTextWithSegments {
   const graphemeSegmenter = getSharedGraphemeSegmenter()
   const engineProfile = getEngineProfile()
@@ -200,11 +198,7 @@ function measureAnalysis(
   )
   const discretionaryHyphenWidth = getCorrectedSegmentWidth('-', getSegmentMetrics('-', cache), emojiCorrection)
   const spaceWidth = getCorrectedSegmentWidth(' ', getSegmentMetrics(' ', cache), emojiCorrection)
-  const tabSize =
-    options?.tabSize !== undefined && Number.isFinite(options.tabSize) && options.tabSize > 0
-      ? options.tabSize
-      : 8
-  const tabStopAdvance = spaceWidth * tabSize
+  const tabStopAdvance = spaceWidth * 8
 
   if (analysis.len === 0) return createEmptyPrepared(includeSegments)
 
@@ -423,7 +417,7 @@ function prepareInternal(
   options?: PrepareOptions,
 ): InternalPreparedText | PreparedTextWithSegments {
   const analysis = analyzeText(text, getEngineProfile(), options?.whiteSpace)
-  return measureAnalysis(analysis, font, includeSegments, options)
+  return measureAnalysis(analysis, font, includeSegments)
 }
 
 // Diagnostic-only helper used by the browser benchmark harness to separate the
@@ -432,7 +426,7 @@ export function profilePrepare(text: string, font: string, options?: PrepareOpti
   const t0 = performance.now()
   const analysis = analyzeText(text, getEngineProfile(), options?.whiteSpace)
   const t1 = performance.now()
-  const prepared = measureAnalysis(analysis, font, false, options) as InternalPreparedText
+  const prepared = measureAnalysis(analysis, font, false) as InternalPreparedText
   const t2 = performance.now()
 
   let breakableSegments = 0

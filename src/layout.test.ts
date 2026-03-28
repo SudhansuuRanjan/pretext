@@ -487,22 +487,6 @@ describe('layout invariants', () => {
     expect(layout(prepared, width, LINE_HEIGHT).lineCount).toBe(2)
   })
 
-  test('pre-wrap mode respects custom tabSize', () => {
-    const smallTabs = prepareWithSegments('a\tb', FONT, { whiteSpace: 'pre-wrap', tabSize: 4 })
-    const largeTabs = prepareWithSegments('a\tb', FONT, { whiteSpace: 'pre-wrap', tabSize: 8 })
-    const spaceWidth = measureWidth(' ', FONT)
-    const prefixWidth = measureWidth('a', FONT)
-    const suffixWidth = measureWidth('b', FONT)
-    const widthForSmallTabs =
-      prefixWidth + nextTabAdvance(prefixWidth, spaceWidth, 4) + suffixWidth
-    const widthForLargeTabs =
-      prefixWidth + nextTabAdvance(prefixWidth, spaceWidth, 8) + suffixWidth
-    const width = (widthForSmallTabs + widthForLargeTabs) / 2
-
-    expect(layout(smallTabs, width, LINE_HEIGHT).lineCount).toBe(1)
-    expect(layout(largeTabs, width, LINE_HEIGHT).lineCount).toBe(2)
-  })
-
   test('pre-wrap mode treats consecutive tabs as distinct tab stops', () => {
     const prepared = prepareWithSegments('a\t\tb', FONT, { whiteSpace: 'pre-wrap' })
     const spaceWidth = measureWidth(' ', FONT)
@@ -515,6 +499,23 @@ describe('layout invariants', () => {
     const lines = layoutWithLines(prepared, width, LINE_HEIGHT)
     expect(lines.lines.map(line => line.text)).toEqual(['a\t\t', 'b'])
     expect(layout(prepared, width, LINE_HEIGHT).lineCount).toBe(2)
+  })
+
+  test('pre-wrap mode keeps whitespace-only middle lines visible', () => {
+    const prepared = prepareWithSegments('foo\n  \nbar', FONT, { whiteSpace: 'pre-wrap' })
+    const lines = layoutWithLines(prepared, 200, LINE_HEIGHT)
+    expect(lines.lines.map(line => line.text)).toEqual(['foo', '  ', 'bar'])
+    expect(layout(prepared, 200, LINE_HEIGHT)).toEqual({ lineCount: 3, height: LINE_HEIGHT * 3 })
+  })
+
+  test('pre-wrap mode restarts tab stops after a hard break', () => {
+    const prepared = prepareWithSegments('foo\n\tbar', FONT, { whiteSpace: 'pre-wrap' })
+    const lines = layoutWithLines(prepared, 200, LINE_HEIGHT)
+    const spaceWidth = measureWidth(' ', FONT)
+    const expectedSecondLineWidth = nextTabAdvance(0, spaceWidth, 8) + measureWidth('bar', FONT)
+
+    expect(lines.lines.map(line => line.text)).toEqual(['foo', '\tbar'])
+    expect(lines.lines[1]!.width).toBeCloseTo(expectedSecondLineWidth, 5)
   })
 
   test('layoutNextLine stays aligned with layoutWithLines in pre-wrap mode', () => {

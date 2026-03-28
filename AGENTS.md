@@ -20,7 +20,7 @@ Internal notes for contributors and agents. Use `README.md` as the public source
 - `bun run gatsby-check` / `:safari` — Gatsby canary diagnostics
 - `bun run gatsby-sweep --start=300 --end=900 --step=10` — fast Gatsby width sweep; add `--diagnose` to rerun mismatching widths through the slow checker
 - `bun run pre-wrap-check --browser=chrome,safari` — small browser-oracle sweep for `{ whiteSpace: 'pre-wrap' }` cases like preserved spaces, tabs, hard breaks, CRLF normalization, and mixed-script indentation
-- `bun run probe-check --text='...' --width=320 --font='20px ...' --dir=rtl --lang=ar --method=range|span --whiteSpace=normal|pre-wrap --tabSize=8` — isolate a single snippet in the real browser and choose the browser-line extraction method explicitly
+- `bun run probe-check --text='...' --width=320 --font='20px ...' --dir=rtl --lang=ar --method=range|span --whiteSpace=normal|pre-wrap` — isolate a single snippet in the real browser and choose the browser-line extraction method explicitly
 - `bun run corpus-check --id=mixed-app-text --diagnose --method=span|range 710` — compare corpus-line extraction methods directly when a mismatch may be diagnostic-tool sensitive
 
 ### Important files
@@ -71,7 +71,7 @@ Internal notes for contributors and agents. Use `README.md` as the public source
 - Bidi levels now stay on the rich `prepareWithSegments()` path as custom-rendering metadata only. The opaque fast `prepare()` handle should not pay for bidi metadata that `layout()` does not consume, and line breaking itself does not read those levels.
 - A larger pure-TS Unicode stack like `text-shaper` is useful as reference material, especially for Unicode coverage and richer bidi metadata, but its runtime segmentation and greedy glyph-line breaker are not replacements for our browser-facing `Intl.Segmenter` + preprocessing + canvas-measurement model.
 - Supported CSS target is still the common app-text configuration: `white-space: normal`, `word-break: normal`, `overflow-wrap: break-word`, `line-break: auto`.
-- There is now a second explicit whitespace mode, `{ whiteSpace: 'pre-wrap' }`, for ordinary spaces, `\t` tabs, and `\n` hard breaks. It also accepts numeric `tabSize` stops. Treat it as editor/input-oriented, not the whole CSS `pre-wrap` surface.
+- There is now a second explicit whitespace mode, `{ whiteSpace: 'pre-wrap' }`, for ordinary spaces, `\t` tabs, and `\n` hard breaks. Tabs follow the default browser-style tab stops. Treat it as editor/input-oriented, not the whole CSS `pre-wrap` surface.
 - Keep the permanent `pre-wrap` coverage small and explicit. A one-time raw-source validation was useful, but the standing repo coverage should stay a compact oracle set rather than a giant sweep over wiki scaffolding.
 - That default target means narrow widths may still break inside words, but only at grapheme boundaries. Keep the core engine honest to that behavior; if an editorial page wants stricter whole-word handling, layer it on top in userland instead of quietly changing the library default.
 - `system-ui` is unsafe for accuracy; canvas and DOM can resolve different fonts on macOS.
